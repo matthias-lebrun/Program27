@@ -1,0 +1,169 @@
+
+
+c++ code:
+
+prog27Functions.h
+
+#ifndef PROG27FUNCTIONS_H_INCLUDED
+#define PROG27FUNCTIONS_H_INCLUDED
+
+//transaction class
+class Transaction
+{
+public:
+
+int tId;
+char dw;
+double amount;
+int cate;
+
+Transaction(){}
+void setTransaction(int tId, char dw,double amount, int cate);
+};
+
+//categories class
+class Categories
+{
+public:
+
+int cId;
+std::string desc;
+
+Categories(){}
+void setCategories(int,std::string);
+
+};
+
+//balance class
+class Balance
+{
+public:
+double balance;
+
+void setBalance(double);
+};
+
+//function declaration
+void listTransaction(Transaction[], int,Categories[],int,double bal);
+#endif // PROG27FUNCTIONS_H_INCLUDED
+
+prog27Functions.cpp
+
+#include <iostream>
+#include "prog27Functions.h"
+
+using namespace std;
+
+//set transaction values
+void Transaction::setTransaction(int tId, char dw,double amount, int cate)
+{
+this->tId=tId;
+this->dw= dw;
+this->amount= amount;
+this->cate= cate;
+
+}
+//set category values
+void Categories::setCategories(int id,string des)
+{
+this->cId=id;
+this->desc =des;
+}
+
+//set balance
+void Balance::setBalance(double bal)
+{
+this->balance=bal;
+}
+
+//print the transaction
+
+void listTransaction(Transaction t[], int tlen, Categories c[],int clen,double bal)
+{
+int flag,nbal=0;
+
+for(int k=0;k< tlen;k++)
+{
+flag=0;
+for(int i=0;i< tlen-1;i++){
+if(k+1==t[i].tId){
+if(t[i].dw=='W')
+bal-=t[i].amount;
+else
+bal+=t[i].amount;
+
+if(bal<0)
+nbal=1;
+
+
+for(int j=0;j<clen;j++){
+if(t[i].cate==c[j].cId){
+flag=1;
+cout<<"\n "<<t[i].tId<<"\t"<<c[j].desc<<"\t"<<t[i].dw<<"\t"<<t[i].amount<<"\t"<<bal;
+}
+}
+}
+}
+if(flag==0)
+cout<<"\n\nMISSING TRANSACTION\n\n";
+}
+if(nbal==1){
+cout<<"\n\n **** WARNING: Negative Balance ****\n\n";
+return ;
+}
+}
+
+main.cpp
+
+#include <iostream>
+#include <fstream>
+#include "prog27Functions.h"
+
+using namespace std;
+
+int main()
+{
+//array objects
+Categories c[50];
+Transaction t[50];
+
+int tId, i=0,j=0, cid,cate;
+char dw;
+double amount;
+string des;
+
+//files
+ifstream file1,file2,file3;
+
+file1.open("C:/Users/Apple/Desktop/transactions.dat");
+file2.open("C:/Users/Apple/Desktop/categories.txt");
+file3.open("C:/Users/Apple/Desktop/balance.dat");
+
+if(!(file1 || file2||file3)){
+cout<<"\nFile not exits\n";
+return 1;
+}
+//get the data
+while(file1)
+{
+file1>>tId>>dw>>amount>>cate;
+t[i].setTransaction(tId,dw,amount,cate);
+i++;
+
+}
+//get the data from category file
+while(file2)
+{
+file2>>cid>>des;
+c[j].setCategories(cid,des);
+j++;
+}
+
+//get the balance
+Balance b;
+file3>>b.balance;
+
+//call the functions
+listTransaction(t,i,c,j,b.balance);
+return 0;
+}
